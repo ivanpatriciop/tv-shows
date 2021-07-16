@@ -15,6 +15,7 @@
 
 <body>
     <div class="container">
+        <!-- Nav bar component -->
         <ul class="nav justify-content-end navbar-light bg-light">
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/">Home</a>
@@ -24,38 +25,43 @@
             </li>
 
         </ul>
+        <!-- jumbotron component  -->
         <div class="jumbotron">
             <h1 class="display-4">Nuevo Show</h1>
             <p class="lead">Añadir un nuevo show</p>
         </div>
-        <form class="needs-validation" action="/shows/create" method="POST">
+        <!-- alertas para emnsajes de error -->
+        {% if messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="messages">
+                {% for message in messages %}
+                <li><strong class="text-capitalize">{{message.tags}}:</strong> {{message}} {% endfor %}</li>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        <!-- formulario estandar -->
+        <form class="needs-validation" action="/shows/create" method="POST" novalidate>
             {% csrf_token %}
             <div class="w-50 mb-5">
                 <label for="title" class="form-label">Título</label>
-                <input type="text" class="form-control" name="title" placeholder="Ingrese título del show" required>
-                <div class="invalid-feedback">
-                    Por favor ingrese un título
-                </div>
+                <input type="text" class="form-control" name="title" placeholder="Ingrese título del show">
                 <br>
                 <div class="row g-2">
                     <div class="col-md">
                         <label for="network" class="form-label">Network</label>
-                        <select class="form-select" name="network_dropdown" required>
-                                <option selected disabled value =0 >Seleccione opción:</option>
+                        <select class="form-select" name="network_dropdown">
+                                <option selected  value ="-1" >Seleccione opción:</option>
                                 {% for network in all_networks%}
                                  <option value ={{network.id}}>{{network.name}}</option>
                                 {% endfor %}
                             </select>
-                        <div class="invalid-feedback">
-                            Por favor seleccione una opción válida.
-                        </div>
+
                     </div>
                     <div class="col-md">
                         <label for="release_date" class="form-label">Release Date</label>
-                        <input type="date" class="form-control" name="release_date" required>
-                        <div class="invalid-feedback">
-                            Por favor ingrese una fecha
-                        </div>
+                        <input type="date" class="form-control" name="release_date" selected value="2021-01-01">
+
                     </div>
                 </div>
                 <br>

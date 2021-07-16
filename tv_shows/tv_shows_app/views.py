@@ -1,7 +1,10 @@
+from django.core.checks import messages
 from django.db import reset_queries
+from django.db.models.expressions import Value
 from tv_shows_app.models import Show
 from django.shortcuts import redirect, render
-from .models import Network, Show
+from .models import Network, Show, ShowManager
+from django.contrib import messages
 
 
 def index(request):
@@ -25,13 +28,20 @@ def new(request):
 def create(request):
     if request.method == "POST":
         
-        new_show = Show.objects.create(
-            title=request.POST['title'],
-            release_date=request.POST['release_date'],
-            description=request.POST['description'],
-            network= Network.objects.get(id = int(request.POST['network_dropdown'])),
-                
-        )
+        errors = Show.objects.basic_validator(request.POST)
+        
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/shows/new')
+        else:        
+            new_show = Show.objects.create(
+                title=request.POST['title'],
+                release_date=request.POST['release_date'],
+                description=request.POST['description'],
+                network= Network.objects.get(id = int(request.POST['network_dropdown'])),
+                    
+            )
     return redirect(f'/shows/{new_show.id}')
 
 def edit(request, show_id):
@@ -45,14 +55,19 @@ def edit(request, show_id):
 
 def update(request,show_id):
     if request.method == "POST":
-
-        updated_show = Show.objects.get(id = show_id)
-        updated_show.title = request.POST['title']
-        updated_show.release_date = request.POST['release_date']
-        updated_show.description = request.POST['description']
-        updated_show.network = Network.objects.get(id = int(request.POST['network_dropdown']))
-        
-        updated_show.save()
+        errors = Show.objects.basic_validator(request.POST)
+        if len(errors) >0:
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect(f"/shows/{show_id}/edit")
+        else:
+            updated_show = Show.objects.get(id = show_id)
+            updated_show.title = request.POST['title']
+            updated_show.release_date = request.POST['release_date']
+            updated_show.description = request.POST['description']
+            updated_show.network = Network.objects.get(id = int(request.POST['network_dropdown']))
+            
+            updated_show.save()
     
     return redirect(f'/shows/{updated_show.id}')
 

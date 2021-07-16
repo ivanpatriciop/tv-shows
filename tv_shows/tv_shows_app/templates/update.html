@@ -25,18 +25,26 @@
 
     </ul>
     <div class="container">
+
         <div class="jumbotron">
             <h1 class="display-4">Editar Show {{show_id}}</h1>
             <p class="lead">Ingrese la información para editar:</p>
         </div>
-        <form class="needs-validation" action="/shows/update/{{one_show.id}}" method="POST">
+        {% if messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="messages">
+                {% for message in messages %}
+                <li><strong class="text-capitalize">{{message.tags}}:</strong> {{message}} {% endfor %}</li>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+        <form class="needs-validation" action="/shows/update/{{one_show.id}}" method="POST" novalidate>
             {% csrf_token %}
             <div class="w-50 mb-5">
                 <label for="title" class="form-label">Título</label>
                 <input type="text" class="form-control" name="title" placeholder="Ingrese título del show" value="{{one_show.title}}" required>
-                <div class="invalid-feedback">
-                    Por favor ingrese un título
-                </div>
+
                 <br>
                 <div class="row g-2">
                     <div class="col-md">
@@ -47,16 +55,12 @@
                                  <option value ={{network.id}}>{{network.name}}</option>
                                 {% endfor %}
                             </select>
-                        <div class="invalid-feedback">
-                            Por favor seleccione una opción válida.
-                        </div>
+
                     </div>
                     <div class="col-md">
                         <label for="release_date" class="form-label">Release Date</label>
-                        <input type="date" class="form-control" name="release_date" value="{{one_show_created_at}}" required>
-                        <div class="invalid-feedback">
-                            Por favor ingrese una fecha
-                        </div>
+                        <input type="date" class="form-control" name="release_date" value="{{one_show_created_at}}" selected value="2021-01-01" required>
+
                     </div>
                 </div>
                 <br>
